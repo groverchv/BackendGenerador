@@ -90,7 +90,7 @@ public class WebSocketPresenceEvents {
     @EventListener
     public void handleTransportError(SessionDisconnectEvent event) {
         String sessionId = event.getSessionId();
-        if (event.getCloseStatus() != null && !event.getCloseStatus().equalsCode(1000)) {
+        if (event.getCloseStatus() != null && event.getCloseStatus().getCode() != 1000) {
             log.warn("Error de transporte WebSocket - sessionId: {}, código: {}", 
                     sessionId, event.getCloseStatus());
         }
