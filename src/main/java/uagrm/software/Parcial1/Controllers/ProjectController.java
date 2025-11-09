@@ -5,11 +5,13 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import uagrm.software.Parcial1.Models.DiagramEntity;
 import uagrm.software.Parcial1.Models.ProjectEntity;
 import uagrm.software.Parcial1.Services.ProjectService;
+import uagrm.software.Parcial1.Services.DiagramRecognitionService;
 
 @RestController
 @RequestMapping("/api/projects")
@@ -17,6 +19,7 @@ import uagrm.software.Parcial1.Services.ProjectService;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final DiagramRecognitionService diagramRecognitionService;
 
     // --- CRUD Proyectos ---
 
@@ -73,6 +76,18 @@ public class ProjectController {
     @PutMapping("/{id}/diagram")
     public DiagramEntity updateDiagram(@PathVariable Long id, @RequestBody DiagramEntity body) {
         return projectService.actualizarDiagrama(id, body);
+    }
+
+    /**
+     * Endpoint para subir una imagen de diagrama y procesarla con Gemini
+     */
+    @PostMapping("/{id}/diagram/upload-image")
+    public DiagramEntity uploadDiagramImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        try {
+            return projectService.actualizarDiagramaDesdeImagen(id, file);
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+        }
     }
 
 }
